@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minha Página Completa</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<title>Hello from Flask</title>
+{% if person %}
+  <h1>Hello {{ person }}!</h1>
+{% else %}
+  <h1>Hello, World!</h1>
+{% endif %}
+
+    <!-- Cabeçalho Principal -->
+    <header>
+        <h1>Bem-vindo ao Meu Site</h1>
+        <nav>
+            <ul>
+                <li><a href="#texto">Texto</a></li>
+                <li><a href="#midia">Mídia</a></li>
+                <li><a href="#contato">Contato</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Seção de Texto e Listas -->
+        <section id="texto">
+            <h2>Seção de Conteúdo</h2>
+            <p>Este é um parágrafo comum. Podemos usar <strong>negrito para destaque</strong> ou <em>itálico para ênfase</em>.</p>
+            
+            <h3>Minha Lista de Tarefas</h3>
+            <ul>
+                <li>Aprender a estrutura do HTML</li>
+                <li>Praticar CSS para estilizar</li>
+                <li>Entender a lógica do JavaScript</li>
+            </ul>
+        </section>
+
+        <!-- Seção de Imagens e Tabelas -->
+        <section id="midia">
+            <h2>Mídia e Dados</h2>
+            <p>Abaixo, um exemplo de imagem (com texto alternativo):</p>
+            <img src="https://via.placeholder.com/150" alt="Exemplo de imagem de espaço reservado">
+
+            <h3>Tabela de Preços</h3>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
+                        <th>Preço</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Café</td>
+                        <td>1kg</td>
+                        <td>R$ 25,00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Seção de Formulário -->
+        <section id="contato">
+            <h2>Fale Conosco</h2>
+            <form action="#">
+                <div>
+                    <label for="nome">Nome:</label><br>
+                    <input type="text" id="nome" name="nome" placeholder="Digite seu nome">
+                </div>
+                <br>
+                <div>
+                    <label>Assunto:</label><br>
+                    <select>
+                        <option value="duvida">Dúvida</option>
+                        <option value="elogio">Elogio</option>
+                        <option value="outro">Outro</option>
+                    </select>
+                </div>
+                <br>
+                <button type="submit">Enviar Mensagem</button>
+            </form>
+        </section>
+    </main>
+
+    <hr>
+
+    <footer>
+        <p>&copy; 2024 - Criado para fins didáticos.</p>
+    </footer>
+
+</body>
+</html>
