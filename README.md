@@ -1,13 +1,13 @@
-# sistema-convenios
+# Sistema Convênios
 Aplicação para o gerenciamento de convênios de estagios da UESPI.
 
-## Tecnologias
+### Tecnologias
 - Python
 - Flask (API backend)
 - SQLite (banco de dados)
 - Flet (interface gráfica)
 
-## Etrutura do Projeto
+### Etrutura do Projeto
 
 sistema-convenios/
 │
