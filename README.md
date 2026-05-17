@@ -4,7 +4,7 @@ Aplicação para o gerenciamento de convênios de estagios da UESPI.
 ## Tecnologias
 - Python
 - Flask (API backend)
-- SQLite (banco de dados)
+- MySQL (banco de dados)
 - Flet (interface gráfica)
 
 ## Etrutura do Projeto
@@ -55,7 +55,7 @@ sistema-convenios/
 │       └── cards.py
 │
 ├── database/
-│   └── convenios.db           # Banco SQLite
+│   └── convenios.db           # Banco MySQL
 │
 ├── tests/                     # Testes unitários
 │   ├── test_auth.py
