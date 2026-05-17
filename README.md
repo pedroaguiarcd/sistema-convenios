@@ -13,7 +13,7 @@ sistema-convenios/
 │
 ├── backend/
 │   ├── app.py                 # Inicialização do Flask
-│   ├── database.py            # Conexão e setup do SQLite
+│   ├── database.py            # Conexão e setup do MySQL
 │   ├── config.py              # Configurações globais
 │   │
 │   ├── models/                # Modelos separados por entidade
