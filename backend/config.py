@@ -11,7 +11,7 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     JWT_SECRET_KEY = SECRET_KEY
-    K=JWT_ACESS_TOKEN_EXPIRES = timedelta(
+    JWT_ACESS_TOKEN_EXPIRES = timedelta(
         days=int(os.getenv("JWT_EXPIRATION", 1))
     )
 
@@ -25,6 +25,10 @@ class Config:
     UPLOAD_FOLDER = os.getenv("UPLOAD_FOLDER", "uploads")
 
     DAYS_ALERT_DUE = int(os.getenv("DAYS_ALERT_DUE", 7))
+
+    MAX_CONTENT_LENGHT = 10 * 1024 * 1024 #10MB
+
+    JSON_SORT_KEYS = False
 
 class DevelopmentConfig(Config):
 
