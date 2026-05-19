@@ -1,6 +1,6 @@
 import flet as ft
 
-from frontend.views.convenios import tela_convenios
+from frontend.views.login import tela_login
 
 
 def main(page: ft.Page):
@@ -14,5 +14,5 @@ def main(page: ft.Page):
 
     page.scroll = ft.ScrollMode.AUTO
 
-    tela_convenios(page)
+    tela_login(page)
 
