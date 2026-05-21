@@ -3,6 +3,7 @@ import flet as ft
 from backend.database import criar_app_flask
 from backend.services.auth_service import autenticar_usuario
 from frontend.views.convenios import tela_convenios
+from frontend.views.painel_empresa import tela_empresa
 
 
 app_flask = criar_app_flask()
@@ -41,18 +42,20 @@ def tela_login(page: ft.Page):
         if not usuario:
 
             mensagem.value = "E-mail ou senha inválidos."
-
             page.update()
-
             return
 
         page.usuario_logado = usuario
 
         page.controls.clear()
 
-        tela_convenios(page)
+        if usuario.perfil == "empresa":
 
-        page.update()
+            tela_empresa(page)
+
+        else:
+
+            tela_convenios(page)
 
         page.update()
 
