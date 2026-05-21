@@ -1,7 +1,6 @@
-# backend/routes/notificacoes.py
 
 from flask import Blueprint, jsonify
-from backend.models.notificacao import Notificacao
+from backend.models.notifications import Notificacao
 from backend.services.vencimento_service import verificar_vencimentos
 from backend.database import db
 
@@ -22,7 +21,7 @@ def listar_notificacoes():
             "mensagem": n.mensagem,
             "tipo": n.tipo,
             "lida": n.lida,
-            "criado_em": n.criado_em.isoformat()
+            "criado_em": n.criado_em.isoformat() if n.criado_em else None
         }
         for n in notificacoes
     ])

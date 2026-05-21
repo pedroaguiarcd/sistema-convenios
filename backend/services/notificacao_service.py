@@ -9,7 +9,13 @@ def criarNotificacaoVencimento(convenio, diasRestantes):
         lida=False
     ).first()
 
+    nova_mensagem = f"O convênio '{convenio.id}' está com vencimento em {diasRestantes} dias."
+
     if notificacaoExistente:
+
+        if notificacaoExistente.mensagem != nova_mensagem:
+            notificacaoExistente.mensagem = nova_mensagem
+            db.session.commit()
 
         return notificacaoExistente
 
@@ -22,5 +28,6 @@ def criarNotificacaoVencimento(convenio, diasRestantes):
     )
 
     db.session.add(notificacao)
+    db.session.commit()
 
     return notificacao

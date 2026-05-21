@@ -6,6 +6,7 @@ class Notification(db.Model):
     __tablename__ = "notifications"
 
     id = db.Column(db.Integer, primary_key=True)
+
     convenio_id = db.Column(db.Integer, db.Integer, db.ForeignKey("convenios.id"), nullable=False)
 
     titulo = db.Column(db.String(120), nullable=False)
@@ -16,4 +17,4 @@ class Notification(db.Model):
 
     lida = db.Column(db.Boolean, default=False)
 
-    criada_em = db.Column(db.DateTime, default=datetime.timezone.now)
+    criada_em = db.Column(db.DateTime(timezone=True), default=datetime.now)
