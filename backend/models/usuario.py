@@ -16,3 +16,14 @@ class Usuario(db.Model):
         db.Enum("empresa", "gestor", "admin"),
         nullable=False
     )
+
+    empresa_id = db.Column(
+        db.Integer,
+        db.ForeignKey("empresas.id"),
+        nullable=True
+    )
+
+    empresa = db.relationship(
+        "Empresa",
+        backref="usuarios"
+    )

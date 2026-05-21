@@ -8,8 +8,10 @@ class Empresa(db.Model):
 
     nome = db.Column(db.String(255), nullable=False)
 
-    cnpj = db.Column(db.String(20))
+    cnpj = db.Column(db.String(30))
 
     email = db.Column(db.String(255))
 
     telefone = db.Column(db.String(20))
+
+    endereco = db.Column(db.String(255))

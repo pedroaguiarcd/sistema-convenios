@@ -3,6 +3,7 @@ import flet as ft
 from backend.database import criar_app_flask
 from backend.services.convenio_service import listar_convenios
 from frontend.components.cards import criar_card_convenio
+from backend.models.convenio import Convenio
 
 
 app_flask = criar_app_flask()
@@ -10,45 +11,147 @@ app_flask = criar_app_flask()
 
 def tela_convenios(page: ft.Page):
 
-    filtro_status = "todos"
+    page.controls.clear()
+
+    filtro_status = "ativo"
 
     lista = ft.ListView(
         expand=True,
-        spacing=15,
+        spacing=18,
         auto_scroll=False
     )
 
     titulo = ft.Text(
         "Sistema de Gestão de Convênios",
-        size=30,
+        size=32,
         weight=ft.FontWeight.BOLD,
-        color="#222"
+        color="#1F2937"
+    )
+
+    subtitulo = ft.Text(
+        "Painel de monitoramento e análise de convênios",
+        size=14,
+        color="#6B7280"
+    )
+
+    notificacao_texto = ft.Text(
+        "",
+        color="#8A5A00",
+        weight=ft.FontWeight.BOLD,
+        size=15
+    )
+
+    def abrir_pendentes(e):
+
+        from frontend.views.painel_gestor import tela_gestor
+
+        tela_gestor(page)
+
+    def abrir_historico(e):
+
+        from frontend.views.historico import tela_historico
+
+        tela_historico(page)
+
+    notificacao = ft.Container(
+        padding=14,
+        border_radius=10,
+        bgcolor="#FFF4CC",
+        visible=False,
+        on_click=abrir_pendentes,
+
+        content=ft.Row(
+            controls=[
+                ft.Text(
+                    "🔔",
+                    size=18
+                ),
+
+                notificacao_texto,
+
+                ft.Text(
+                    "Ver solicitações",
+                    color="#1F6FEB",
+                    weight=ft.FontWeight.BOLD
+                )
+            ],
+
+            spacing=10
+        )
     )
 
     def carregar_convenios():
+
         lista.controls.clear()
 
         with app_flask.app_context():
+
+            pendentes = (
+                Convenio.query
+                .filter_by(
+                    status="pendente"
+                )
+                .count()
+            )
+
+            if pendentes > 0:
+
+                notificacao.visible = True
+
+                notificacao.bgcolor = "#FFF4CC"
+
+                notificacao_texto.value = (
+                    f"{pendentes} solicitação(ões) aguardando análise."
+                )
+
+            else:
+
+                notificacao.visible = True
+
+                notificacao.bgcolor = "#E7F7E7"
+
+                notificacao_texto.value = (
+                    "Nenhuma solicitação pendente."
+                )
+
+                notificacao_texto.color = "#1A7F37"
+
             convenios = listar_convenios(
                 filtro_status
             )
 
             if not convenios:
+
                 lista.controls.append(
-                    ft.Text(
-                        "Nenhum convênio encontrado.",
-                        color="#333"
+
+                    ft.Container(
+
+                        padding=20,
+
+                        bgcolor="#FFFFFF",
+
+                        border_radius=10,
+
+                        content=ft.Text(
+                            "Nenhum convênio encontrado."
+                        )
                     )
                 )
 
             for convenio in convenios:
+
                 lista.controls.append(
-                    criar_card_convenio(convenio)
+                    criar_card_convenio(
+                    convenio,
+                    page,
+                    carregar_convenios
+                )
                 )
 
         page.update()
 
     def filtrar(status):
+
         nonlocal filtro_status
 
         filtro_status = status
@@ -56,33 +159,59 @@ def tela_convenios(page: ft.Page):
         carregar_convenios()
 
     filtros = ft.Row(
+
         controls=[
-            ft.Button(
-                "Todos",
-                on_click=lambda e: filtrar("todos")
-            ),
 
             ft.Button(
                 "Ativos",
-                on_click=lambda e: filtrar("ativo")
+                on_click=lambda e:
+                filtrar(
+                    "ativo"
+                )
             ),
 
             ft.Button(
-                "Pendentes",
-                on_click=lambda e: filtrar("pendente")
-            ),
+                "Histórico",
+                on_click=abrir_historico
+            )
 
-            ft.Button(
-                "Vencidos",
-                on_click=lambda e: filtrar("vencido")
-            ),
-        ]
+        ],
+
+        spacing=10
+
+    )
+
+    conteudo = ft.Container(
+
+        padding=30,
+
+        bgcolor="#F4F6F9",
+
+        expand=True,
+
+        content=ft.Column(
+
+            controls=[
+
+                titulo,
+
+                subtitulo,
+
+                notificacao,
+
+                filtros,
+
+                lista
+
+            ],
+
+            spacing=18
+
+        )
     )
 
     page.add(
-        titulo,
-        filtros,
-        lista
+        conteudo
     )
 
     carregar_convenios()
