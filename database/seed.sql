@@ -10,7 +10,7 @@ INSERT INTO empresas (
 VALUES (
     'Tech Solutions LTDA',
     '33.000.167/0001-01',
-    'contato@techsolutions.com',
+    'empresa@teste.com',
     '(92) 4004-0001',
     'Manaus/AM'
 );
@@ -56,12 +56,14 @@ INSERT INTO convenios (
     cnpj,
     endereco,
     responsavel_legal,
+    documento_anexo,
+    arquivo_documento,
     data_aprovacao,
     aprovado_por
 )
 VALUES (
     1,
-    'Convênio de estágio supervisionado em desenvolvimento de software e suporte técnico',
+    'Convênio de estágio supervisionado em desenvolvimento de software',
     'supervisionado',
     '2026-01-10',
     '2026-06-30',
@@ -70,6 +72,8 @@ VALUES (
     '33.000.167/0001-01',
     'Manaus/AM',
     'Marcos Vinicius Almeida',
+    NULL,
+    NULL,
     '2026-01-10',
     'Gestor UESPI'
 );
