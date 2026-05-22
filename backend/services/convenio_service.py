@@ -1,5 +1,7 @@
 from datetime import date, datetime
 
+from backend.services.pdf_service import gerar_termo_convenio
+
 from backend.models.convenio import Convenio
 from backend.database import db
 
@@ -24,7 +26,6 @@ def excluir_convenio(
 
     return convenio
 
-
 def aprovar_convenio(
     convenio_id,
     gestor="Gestor UESPI"
@@ -43,6 +44,10 @@ def aprovar_convenio(
     convenio.aprovado_por = gestor
 
     db.session.commit()
+
+    gerar_termo_convenio(
+        convenio
+    )
 
     return convenio
 

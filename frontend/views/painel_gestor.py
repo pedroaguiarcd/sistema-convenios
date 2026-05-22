@@ -189,7 +189,7 @@ def tela_gestor(page: ft.Page):
                             convenio_id
                         )
 
-                    mensagem.value = "Convênio aprovado."
+                    mensagem.value = "Convênio aprovado e termo gerado automaticamente."
                     mensagem.color = "green"
 
                     carregar_pendentes()
@@ -350,15 +350,6 @@ def tela_gestor(page: ft.Page):
                                         on_click=rejeitar
                                     ),
 
-                                    ft.Button(
-                                        "Gerar termo",
-                                        on_click=gerar_pdf
-                                    ),
-
-                                    ft.Button(
-                                        "Abrir termo",
-                                        on_click=abrir_termo
-                                    )
                                 ]
                             )
                         ]
