@@ -84,6 +84,10 @@ class Convenio(db.Model):
 
     campos_alterados = db.Column(db.Text)
 
+    arquivo_documento = db.Column(
+    db.String(255)
+    )
+
     motivo_exclusao = db.Column(db.String(255))
 
     deletado = db.Column(

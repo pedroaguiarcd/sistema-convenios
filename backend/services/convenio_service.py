@@ -158,7 +158,8 @@ def criar_convenio(
     cnpj,
     endereco,
     responsavel_legal,
-    documento_anexo=""
+    documento_anexo="",
+    arquivo_documento=None
 ):
 
     convenio = Convenio(
@@ -172,7 +173,8 @@ def criar_convenio(
         endereco=endereco,
         responsavel_legal=responsavel_legal,
         documento_anexo=documento_anexo,
-        status="pendente"
+        status="pendente",
+        arquivo_documento=arquivo_documento,
     )
 
     db.session.add(convenio)

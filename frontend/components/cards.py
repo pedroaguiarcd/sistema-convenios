@@ -133,6 +133,21 @@ def criar_card_convenio(
                 f"file://{caminho}"
             )
 
+    def abrir_documento(e):
+
+        if not convenio.arquivo_documento:
+            return
+
+        caminho = os.path.abspath(
+            convenio.arquivo_documento
+        )
+
+        if os.path.exists(caminho):
+
+            webbrowser.open(
+                f"file://{caminho}"
+            )
+
     informacoes_historico = []
 
     if convenio.alterado_em:
@@ -313,6 +328,7 @@ def criar_card_convenio(
                 ft.Row(
 
                     alignment=ft.MainAxisAlignment.END,
+                    wrap=True,
 
                     controls=[
 
@@ -334,6 +350,11 @@ def criar_card_convenio(
                         ft.Button(
                             "Abrir termo",
                             on_click=abrir_termo
+                        ),
+
+                        ft.Button(
+                            "Abrir documento",
+                            on_click=abrir_documento
                         )
 
                     ]

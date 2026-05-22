@@ -162,21 +162,15 @@ def tela_gestor(page: ft.Page):
 
             pendentes = (
                 Convenio.query
-                .filter_by(
-                    status="pendente"
-                )
-                .order_by(
-                    Convenio.id.desc()
-                )
+                .filter_by(status="pendente")
+                .order_by(Convenio.id.desc())
                 .all()
             )
 
             if not pendentes:
 
                 lista.controls.append(
-                    ft.Text(
-                        "Nenhuma solicitação pendente."
-                    )
+                    ft.Text("Nenhuma solicitação pendente.")
                 )
 
             for convenio in pendentes:
@@ -185,9 +179,7 @@ def tela_gestor(page: ft.Page):
 
                     with app_flask.app_context():
 
-                        aprovar_convenio(
-                            convenio_id
-                        )
+                        aprovar_convenio(convenio_id)
 
                     mensagem.value = "Convênio aprovado e termo gerado automaticamente."
                     mensagem.color = "green"
@@ -225,9 +217,7 @@ def tela_gestor(page: ft.Page):
                         carregar_pendentes()
 
                     dialog = ft.AlertDialog(
-                        title=ft.Text(
-                            "Rejeitar solicitação"
-                        ),
+                        title=ft.Text("Rejeitar solicitação"),
                         content=motivo,
                         actions=[
                             ft.Button(
@@ -284,7 +274,34 @@ def tela_gestor(page: ft.Page):
 
                         mensagem.value = "Termo ainda não gerado."
                         mensagem.color = "red"
+                        page.update()
 
+                def abrir_documento(e, convenio_obj=convenio):
+
+                    if not convenio_obj.arquivo_documento:
+
+                        mensagem.value = "Nenhum documento anexado."
+                        mensagem.color = "red"
+                        page.update()
+                        return
+
+                    caminho = os.path.abspath(
+                        convenio_obj.arquivo_documento
+                    )
+
+                    if os.path.exists(caminho):
+
+                        webbrowser.open(
+                            f"file://{caminho}"
+                        )
+
+                    else:
+
+                        mensagem.value = (
+                            "Arquivo do documento não encontrado."
+                        )
+
+                        mensagem.color = "red"
                         page.update()
 
                 nome_empresa = (
@@ -339,6 +356,7 @@ def tela_gestor(page: ft.Page):
                             ),
 
                             ft.Row(
+                                wrap=True,
                                 controls=[
                                     ft.Button(
                                         "Aprovar",
@@ -350,15 +368,27 @@ def tela_gestor(page: ft.Page):
                                         on_click=rejeitar
                                     ),
 
+                                    ft.Button(
+                                        "Gerar termo",
+                                        on_click=gerar_pdf
+                                    ),
+
+                                    ft.Button(
+                                        "Abrir termo",
+                                        on_click=abrir_termo
+                                    ),
+
+                                    ft.Button(
+                                        "Abrir documento",
+                                        on_click=abrir_documento
+                                    )
                                 ]
                             )
                         ]
                     )
                 )
 
-                lista.controls.append(
-                    card
-                )
+                lista.controls.append(card)
 
         page.update()
 
