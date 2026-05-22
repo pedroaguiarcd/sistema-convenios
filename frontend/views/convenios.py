@@ -4,6 +4,8 @@ from backend.database import criar_app_flask
 from backend.services.convenio_service import listar_convenios
 from frontend.components.cards import criar_card_convenio
 from backend.models.convenio import Convenio
+from datetime import date
+
 
 
 app_flask = criar_app_flask()
@@ -40,6 +42,104 @@ def tela_convenios(page: ft.Page):
         weight=ft.FontWeight.BOLD,
         size=15
     )
+
+    notificacoes_vencimento = ft.Column(
+        spacing=10,
+        visible=False
+)
+    def carregar_notificacoes_vencimento():
+
+        notificacoes_vencimento.controls.clear()
+
+        with app_flask.app_context():
+
+            hoje = date.today()
+
+            convenios = (
+                Convenio.query
+                .filter(
+                    Convenio.data_fim != None,
+                    Convenio.status != "pendente"
+                )
+                .all()
+            )
+
+            alertas = []
+
+            for convenio in convenios:
+
+                dias_restantes = (convenio.data_fim - hoje).days
+
+                if dias_restantes <= 30:
+
+                    nome_empresa = (
+                        convenio.empresa.nome
+                        if convenio.empresa
+                        else "Empresa não informada"
+                    )
+
+                    alertas.append(
+                        {
+                            "empresa": nome_empresa,
+                            "dias": dias_restantes,
+                            "convenio": convenio
+                        }
+                    )
+
+            if not alertas:
+
+                notificacoes_vencimento.visible = False
+                return
+
+            notificacoes_vencimento.visible = True
+
+            for alerta in alertas:
+
+                if alerta["dias"] < 0:
+
+                    titulo_alerta = "❌ Convênio vencido"
+                    mensagem_alerta = (
+                        f"{alerta['empresa']} venceu há "
+                        f"{abs(alerta['dias'])} dia(s)."
+                    )
+                    cor_fundo = "#FEE2E2"
+                    cor_texto = "#991B1B"
+
+                else:
+
+                    titulo_alerta = "⚠️ Convênio próximo do vencimento"
+                    mensagem_alerta = (
+                        f"{alerta['empresa']} vence em "
+                        f"{alerta['dias']} dia(s)."
+                    )
+                    cor_fundo = "#FEF3C7"
+                    cor_texto = "#92400E"
+
+                notificacoes_vencimento.controls.append(
+                    ft.Container(
+                        padding=15,
+                        border_radius=10,
+                        bgcolor=cor_fundo,
+                        expand=True,
+                        content=ft.Column(
+                            spacing=4,
+                            horizontal_alignment=ft.CrossAxisAlignment.START,
+                            controls=[
+                                ft.Text(
+                                    titulo_alerta,
+                                    weight=ft.FontWeight.BOLD,
+                                    color=cor_texto,
+                                    size=16
+                                ),
+                                ft.Text(
+                                    mensagem_alerta,
+                                    color=cor_texto
+                                )
+                            ]
+                        )
+                    )
+                )
+        
 
     def abrir_pendentes(e):
 
@@ -83,6 +183,8 @@ def tela_convenios(page: ft.Page):
     def carregar_convenios():
 
         lista.controls.clear()
+
+        carregar_notificacoes_vencimento()
 
         with app_flask.app_context():
 
@@ -194,13 +296,10 @@ def tela_convenios(page: ft.Page):
             controls=[
 
                 titulo,
-
                 subtitulo,
-
                 notificacao,
-
+                notificacoes_vencimento,
                 filtros,
-
                 lista
 
             ],
