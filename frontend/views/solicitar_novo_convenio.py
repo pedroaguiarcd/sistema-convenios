@@ -1,5 +1,7 @@
 import flet as ft
 
+import os
+
 from backend.database import criar_app_flask, db
 from backend.models.empresa import Empresa
 from backend.services.convenio_service import criar_convenio
@@ -11,6 +13,9 @@ app_flask = criar_app_flask()
 def tela_solicitar_convenio(page: ft.Page):
 
     page.controls.clear()
+
+    arquivo_nome = ""
+    arquivo_bytes = None
 
     titulo = ft.Text(
         "Solicitar Novo Convênio",
@@ -66,15 +71,39 @@ def tela_solicitar_convenio(page: ft.Page):
         width=500
     )
 
-    documento_anexo = ft.TextField(
-        label="Documento anexo / nome do arquivo",
-        width=500
+    texto_documento = ft.Text(
+        "Nenhum documento selecionado",
+        color="#555"
     )
 
     mensagem = ft.Text(
         "",
         color="green"
     )
+
+    async def selecionar_documento(e):
+
+        nonlocal arquivo_nome
+        nonlocal arquivo_bytes
+
+        resultado = await ft.FilePicker().pick_files(
+            allow_multiple=False,
+            with_data=True
+        )
+
+        if resultado:
+
+            arquivo = resultado[0]
+
+            arquivo_nome = arquivo.name
+
+            arquivo_bytes = arquivo.bytes
+
+            texto_documento.value = (
+                f"Documento selecionado: {arquivo_nome}"
+            )
+
+            page.update()
 
     def abrir_calendario_fim(e):
 
@@ -92,13 +121,18 @@ def tela_solicitar_convenio(page: ft.Page):
             on_change=selecionar
         )
 
-        page.overlay.append(calendario)
+        page.overlay.append(
+            calendario
+        )
 
         calendario.open = True
 
         page.update()
 
     def salvar(e):
+
+        nonlocal arquivo_nome
+        nonlocal arquivo_bytes
 
         if (
             not nome_empresa.value
@@ -120,6 +154,35 @@ def tela_solicitar_convenio(page: ft.Page):
 
         try:
 
+            arquivo_salvo = None
+            nome_documento = ""
+
+            if arquivo_nome and arquivo_bytes:
+
+                os.makedirs(
+                    "uploads/documentos",
+                    exist_ok=True
+                )
+
+                nome_documento = arquivo_nome.replace(
+                    " ",
+                    "_"
+                )
+
+                destino = os.path.join(
+                    "uploads",
+                    "documentos",
+                    nome_documento
+                )
+
+                with open(destino, "wb") as arquivo_final:
+
+                    arquivo_final.write(
+                        arquivo_bytes
+                    )
+
+                arquivo_salvo = destino
+
             with app_flask.app_context():
 
                 empresa = Empresa.query.filter_by(
@@ -135,7 +198,10 @@ def tela_solicitar_convenio(page: ft.Page):
                         telefone=telefone.value
                     )
 
-                    db.session.add(empresa)
+                    db.session.add(
+                        empresa
+                    )
+
                     db.session.commit()
 
                 criar_convenio(
@@ -147,7 +213,8 @@ def tela_solicitar_convenio(page: ft.Page):
                     cnpj=cnpj.value,
                     endereco=endereco.value,
                     responsavel_legal=responsavel.value,
-                    documento_anexo=documento_anexo.value
+                    documento_anexo=nome_documento,
+                    arquivo_documento=arquivo_salvo
                 )
 
             mensagem.value = "Solicitação enviada com sucesso!"
@@ -161,7 +228,10 @@ def tela_solicitar_convenio(page: ft.Page):
             telefone.value = ""
             cnpj.value = ""
             endereco.value = ""
-            documento_anexo.value = ""
+
+            arquivo_nome = ""
+            arquivo_bytes = None
+            texto_documento.value = "Nenhum documento selecionado"
 
             page.update()
 
@@ -181,6 +251,11 @@ def tela_solicitar_convenio(page: ft.Page):
     botao_data_fim = ft.Button(
         "Selecionar data de fim",
         on_click=abrir_calendario_fim
+    )
+
+    botao_documento = ft.Button(
+        "Selecionar documento",
+        on_click=selecionar_documento
     )
 
     botao_salvar = ft.Button(
@@ -208,7 +283,8 @@ def tela_solicitar_convenio(page: ft.Page):
         telefone,
         cnpj,
         endereco,
-        documento_anexo,
+        botao_documento,
+        texto_documento,
         ft.Row(
             controls=[
                 botao_salvar,
