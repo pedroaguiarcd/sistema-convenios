@@ -2,6 +2,7 @@ import flet as ft
 
 import os
 import webbrowser
+from datetime import date
 
 from backend.services.pdf_service import gerar_termo_convenio
 

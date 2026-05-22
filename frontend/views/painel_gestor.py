@@ -1,6 +1,7 @@
 import flet as ft
 import os
 import webbrowser
+from datetime import date
 
 from backend.database import criar_app_flask
 from backend.models.convenio import Convenio
@@ -45,11 +46,113 @@ def tela_gestor(page: ft.Page):
         color="green"
     )
 
+    alertas = ft.Column(
+        spacing=10
+    )
+
+    def carregar_alertas_vencimento():
+
+        alertas.controls.clear()
+
+        with app_flask.app_context():
+
+            hoje = date.today()
+
+            convenios = (
+                Convenio.query
+                .filter(
+                    Convenio.data_fim != None,
+                    Convenio.status != "pendente"
+                )
+                .all()
+            )
+
+            proximos = []
+            vencidos = []
+
+            for convenio in convenios:
+
+                dias_restantes = (convenio.data_fim - hoje).days
+
+                nome_empresa = (
+                    convenio.empresa.nome
+                    if convenio.empresa
+                    else "Empresa não informada"
+                )
+
+                if dias_restantes < 0:
+                    vencidos.append((convenio, nome_empresa, dias_restantes))
+
+                elif dias_restantes <= 30:
+                    proximos.append((convenio, nome_empresa, dias_restantes))
+
+            if not proximos and not vencidos:
+
+                alertas.controls.append(
+                    ft.Container(
+                        padding=15,
+                        border_radius=10,
+                        bgcolor="#ECFDF5",
+                        content=ft.Text(
+                            "✅ Nenhum convênio próximo do vencimento.",
+                            color="#065F46",
+                            weight=ft.FontWeight.BOLD
+                        )
+                    )
+                )
+
+        for convenio, nome_empresa, dias in vencidos:
+
+            alertas.controls.append(
+                ft.Container(
+                    padding=15,
+                    border_radius=10,
+                    bgcolor="#FEE2E2",
+                    content=ft.Column(
+                        controls=[
+                            ft.Text(
+                                "❌ Convênio vencido",
+                                weight=ft.FontWeight.BOLD,
+                                color="#991B1B"
+                            ),
+                            ft.Text(
+                                f"{nome_empresa} venceu há {abs(dias)} dias.",
+                                color="#7F1D1D"
+                            )
+                        ]
+                    )
+                )
+            )
+
+        for convenio, nome_empresa, dias in proximos:
+
+            alertas.controls.append(
+                ft.Container(
+                    padding=15,
+                    border_radius=10,
+                    bgcolor="#FEF3C7",
+                    content=ft.Column(
+                        controls=[
+                            ft.Text(
+                                "⚠️ Convênio próximo do vencimento",
+                                weight=ft.FontWeight.BOLD,
+                                color="#92400E"
+                            ),
+                            ft.Text(
+                                f"{nome_empresa} vence em {dias} dias.",
+                                color="#78350F"
+                            )
+                        ]
+                    )
+                )
+            )
+
     def voltar(e):
 
         from frontend.views.convenios import tela_convenios
 
         tela_convenios(page)
+
 
     def carregar_pendentes():
 
@@ -269,14 +372,27 @@ def tela_gestor(page: ft.Page):
         page.update()
 
     page.add(
-        titulo,
-        subtitulo,
-        mensagem,
-        lista,
-        ft.Button(
-            "Voltar",
-            on_click=voltar
-        )
-    )
+    titulo,
 
+    ft.Text(
+        "Alertas de vencimento",
+        size=20,
+        weight=ft.FontWeight.BOLD,
+        color="#222"
+    ),
+
+    alertas,
+
+    ft.Divider(),
+
+    subtitulo,
+    mensagem,
+    lista,
+
+    ft.Button(
+        "Voltar",
+        on_click=voltar
+    )
+)
+    carregar_alertas_vencimento()
     carregar_pendentes()
