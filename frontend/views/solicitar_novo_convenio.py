@@ -185,22 +185,18 @@ def tela_solicitar_convenio(page: ft.Page):
 
             with app_flask.app_context():
 
-                empresa = Empresa.query.filter_by(
-                    cnpj=cnpj.value
-                ).first()
+                usuario = page.usuario_logado
 
-                if not empresa:
+                empresa = Empresa.query.get(
+                    usuario.empresa_id
+                )
 
-                    empresa = Empresa(
-                        nome=nome_empresa.value,
-                        cnpj=cnpj.value,
-                        email="",
-                        telefone=telefone.value
-                    )
+                if empresa:
 
-                    db.session.add(
-                        empresa
-                    )
+                    empresa.nome = nome_empresa.value
+                    empresa.cnpj = cnpj.value
+                    empresa.telefone = telefone.value
+                    empresa.endereco = endereco.value
 
                     db.session.commit()
 

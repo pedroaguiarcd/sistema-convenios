@@ -193,13 +193,21 @@ def tela_gestor(page: ft.Page):
                         width=400
                     )
 
+                    def fechar_dialog():
+
+                        dialog.open = False
+
+                        page.update()
+
                     def confirmar(ev):
 
                         if not motivo.value:
 
                             mensagem.value = "Informe o motivo."
                             mensagem.color = "red"
+
                             page.update()
+
                             return
 
                         with app_flask.app_context():
@@ -209,7 +217,7 @@ def tela_gestor(page: ft.Page):
                                 motivo.value
                             )
 
-                        page.close(dialog)
+                        fechar_dialog()
 
                         mensagem.value = "Convênio rejeitado."
                         mensagem.color = "red"
@@ -217,22 +225,37 @@ def tela_gestor(page: ft.Page):
                         carregar_pendentes()
 
                     dialog = ft.AlertDialog(
-                        title=ft.Text("Rejeitar solicitação"),
+
+                        title=ft.Text(
+                            "Rejeitar solicitação"
+                        ),
+
                         content=motivo,
+
                         actions=[
+
                             ft.Button(
-                                "Cancelar",
-                                on_click=lambda x:
-                                page.close(dialog)
-                            ),
+    "Cancelar",
+    on_click=lambda x:
+    fechar_dialog()
+),
+
                             ft.Button(
                                 "Confirmar",
                                 on_click=confirmar
                             )
+
                         ]
+
                     )
 
-                    page.open(dialog)
+                    page.overlay.append(
+                        dialog
+                    )
+
+                    dialog.open = True
+
+                    page.update()
 
                 def gerar_pdf(e, convenio_obj=convenio):
 
@@ -274,6 +297,7 @@ def tela_gestor(page: ft.Page):
 
                         mensagem.value = "Termo ainda não gerado."
                         mensagem.color = "red"
+
                         page.update()
 
                 def abrir_documento(e, convenio_obj=convenio):
@@ -282,7 +306,9 @@ def tela_gestor(page: ft.Page):
 
                         mensagem.value = "Nenhum documento anexado."
                         mensagem.color = "red"
+
                         page.update()
+
                         return
 
                     caminho = os.path.abspath(
@@ -302,6 +328,7 @@ def tela_gestor(page: ft.Page):
                         )
 
                         mensagem.color = "red"
+
                         page.update()
 
                 nome_empresa = (
