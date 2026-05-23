@@ -1,6 +1,6 @@
 
 from flask import Blueprint, jsonify
-from backend.models.notifications import Notificacao
+from backend.models.notifications import Notification
 from backend.services.vencimento_service import verificar_vencimentos
 from backend.database import db
 
@@ -9,8 +9,8 @@ notificacoes_bp = Blueprint("notificacoes", __name__, url_prefix="/notificacoes"
 
 @notificacoes_bp.get("/")
 def listar_notificacoes():
-    notificacoes = Notificacao.query.order_by(
-        Notificacao.criado_em.desc()
+    notificacoes = Notification.query.order_by(
+        Notification.criado_em.desc()
     ).all()
 
     return jsonify([
@@ -21,7 +21,7 @@ def listar_notificacoes():
             "mensagem": n.mensagem,
             "tipo": n.tipo,
             "lida": n.lida,
-            "criado_em": n.criado_em.isoformat() if n.criado_em else None
+            "criado_em": n.criada_em.isoformat() if n.criada_em else None
         }
         for n in notificacoes
     ])
@@ -35,7 +35,7 @@ def executar_verificacao():
 
 @notificacoes_bp.patch("/<int:notificacao_id>/lida")
 def marcar_como_lida(notificacao_id):
-    notificacao = Notificacao.query.get_or_404(notificacao_id)
+    notificacao = Notification.query.get_or_404(notificacao_id)
     notificacao.lida = True
 
     db.session.commit()

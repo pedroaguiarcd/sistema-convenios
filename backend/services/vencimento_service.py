@@ -1,7 +1,7 @@
 from datetime import date
 from backend.database import db
 from backend.models.convenio import Convenio
-from backend.services.notificacao_service import criar_notificacao_vencimento
+from backend.services.notificacao_service import criarNotificacaoVencimento
 
 
 def verificar_vencimentos():
@@ -24,7 +24,7 @@ def verificar_vencimentos():
         elif dias_restantes <= 30:
             convenio.status = "PROXIMO_VENCIMENTO"
             resultado["proximos"] += 1
-            criar_notificacao_vencimento(convenio, dias_restantes)
+            criarNotificacaoVencimento(convenio, dias_restantes)
 
         else:
             convenio.status = "VIGENTE"
