@@ -40,7 +40,7 @@ INSERT INTO usuarios (
 VALUES (
     'Tech Solutions LTDA',
     'empresa@teste.com',
-    '123456',
+    'empresa123',
     'empresa',
     1
 );
