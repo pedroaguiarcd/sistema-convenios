@@ -1,6 +1,7 @@
 import flet as ft
 import os
 import webbrowser
+
 from backend.database import criar_app_flask
 from backend.models.convenio import Convenio
 
@@ -48,7 +49,11 @@ def tela_empresa(page: ft.Page):
             convenios = (
                 Convenio.query
                 .filter_by(
-                    empresa_id=usuario.empresa_id
+                    empresa_id=usuario.empresa_id,
+                    deletado=False
+                )
+                .filter(
+                    Convenio.status != "cancelado"
                 )
                 .order_by(
                     Convenio.id.desc()
@@ -65,8 +70,9 @@ def tela_empresa(page: ft.Page):
                 )
 
             for convenio in convenios:
+
                 def abrir_termo(
-    e,
+                    e,
                     convenio_id=convenio.id
                 ):
 
@@ -83,7 +89,6 @@ def tela_empresa(page: ft.Page):
                 arquivo_termo = os.path.exists(
                     f"uploads/termos_gerados/termo_{convenio.id}.pdf"
                 )
-
 
                 informacoes = [
 
@@ -129,16 +134,16 @@ def tela_empresa(page: ft.Page):
                         f"Vencimento: {convenio.data_fim}"
                     ),
 
-                    ft.Button(
-                        "Abrir termo",
-                        on_click=abrir_termo
-                    )
-
-                    if arquivo_termo
-
-                    else ft.Text(
-                        "Termo ainda não gerado",
-                        color="#D97706"
+                    (
+                        ft.Button(
+                            "Abrir termo",
+                            on_click=abrir_termo
+                        )
+                        if arquivo_termo
+                        else ft.Text(
+                            "Termo ainda não gerado",
+                            color="#D97706"
+                        )
                     )
                 ]
 
