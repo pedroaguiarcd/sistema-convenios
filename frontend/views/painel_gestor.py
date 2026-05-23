@@ -146,7 +146,9 @@ def tela_gestor(page: ft.Page):
 
                     )
 
-                    page.dialog = dialog
+                    page.overlay.append(
+                        dialog
+                    )
 
                     dialog.open = True
 
