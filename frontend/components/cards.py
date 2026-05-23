@@ -356,6 +356,13 @@ def criar_card_convenio(
                             on_click=abrir_documento
                         )
 
+                        if convenio.arquivo_documento
+
+                        else ft.Text(
+                            "Sem documento anexado",
+                            color="#6B7280"
+                        )
+
                     ]
 
                 )
