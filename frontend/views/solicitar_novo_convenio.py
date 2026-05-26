@@ -1,8 +1,7 @@
 import flet as ft
-
 import os
 
-from backend.database import criar_app_flask, db
+from backend.database import criar_app_flask
 from backend.models.empresa import Empresa
 from backend.services.convenio_service import criar_convenio
 
@@ -24,10 +23,10 @@ def tela_solicitar_convenio(page: ft.Page):
         color="#222"
     )
 
-    nome_empresa = ft.TextField(
-        label="Nome da empresa",
-        width=500
-    )
+    nome = ft.TextField(
+    label="Nome do convênio",
+    width=500
+)
 
     descricao = ft.TextField(
         label="Descrição do convênio",
@@ -43,12 +42,6 @@ def tela_solicitar_convenio(page: ft.Page):
             ft.dropdown.Option("nao_obrigatorio"),
             ft.dropdown.Option("supervisionado"),
         ]
-    )
-
-    data_fim = ft.TextField(
-        label="Data de fim",
-        width=500,
-        read_only=True
     )
 
     responsavel = ft.TextField(
@@ -96,7 +89,6 @@ def tela_solicitar_convenio(page: ft.Page):
             arquivo = resultado[0]
 
             arquivo_nome = arquivo.name
-
             arquivo_bytes = arquivo.bytes
 
             texto_documento.value = (
@@ -105,49 +97,22 @@ def tela_solicitar_convenio(page: ft.Page):
 
             page.update()
 
-    def abrir_calendario_fim(e):
-
-        def selecionar(ev):
-
-            if ev.control.value:
-
-                data_fim.value = str(
-                    ev.control.value.date()
-                )
-
-                page.update()
-
-        calendario = ft.DatePicker(
-            on_change=selecionar
-        )
-
-        page.overlay.append(
-            calendario
-        )
-
-        calendario.open = True
-
-        page.update()
-
     def salvar(e):
 
         nonlocal arquivo_nome
         nonlocal arquivo_bytes
 
         if (
-            not nome_empresa.value
-            or not descricao.value
+            not descricao.value
             or not tipo_convenio.value
-            or not data_fim.value
             or not cnpj.value
         ):
 
             mensagem.value = (
-                "Preencha nome da empresa, descrição, tipo, data de fim e CNPJ."
+                "Preencha descrição, tipo e CNPJ."
             )
 
             mensagem.color = "red"
-
             page.update()
 
             return
@@ -191,20 +156,23 @@ def tela_solicitar_convenio(page: ft.Page):
                     usuario.empresa_id
                 )
 
-                if empresa:
+                if not empresa:
 
-                    empresa.nome = nome_empresa.value
-                    empresa.cnpj = cnpj.value
-                    empresa.telefone = telefone.value
-                    empresa.endereco = endereco.value
+                    mensagem.value = (
+                        "Empresa vinculada ao usuário não encontrada."
+                    )
 
-                    db.session.commit()
+                    mensagem.color = "red"
+                    page.update()
+
+                    return
 
                 criar_convenio(
                     empresa_id=empresa.id,
+                    nome=nome.value,
                     descricao=descricao.value,
                     tipo_convenio=tipo_convenio.value,
-                    data_fim=data_fim.value,
+                    data_fim=None,
                     telefone=telefone.value,
                     cnpj=cnpj.value,
                     endereco=endereco.value,
@@ -216,10 +184,8 @@ def tela_solicitar_convenio(page: ft.Page):
             mensagem.value = "Solicitação enviada com sucesso!"
             mensagem.color = "green"
 
-            nome_empresa.value = ""
             descricao.value = ""
             tipo_convenio.value = "supervisionado"
-            data_fim.value = ""
             responsavel.value = ""
             telefone.value = ""
             cnpj.value = ""
@@ -227,6 +193,7 @@ def tela_solicitar_convenio(page: ft.Page):
 
             arquivo_nome = ""
             arquivo_bytes = None
+
             texto_documento.value = "Nenhum documento selecionado"
 
             page.update()
@@ -243,11 +210,6 @@ def tela_solicitar_convenio(page: ft.Page):
         from frontend.views.painel_empresa import tela_empresa
 
         tela_empresa(page)
-
-    botao_data_fim = ft.Button(
-        "Selecionar data de fim",
-        on_click=abrir_calendario_fim
-    )
 
     botao_documento = ft.Button(
         "Selecionar documento",
@@ -266,15 +228,9 @@ def tela_solicitar_convenio(page: ft.Page):
 
     page.add(
         titulo,
-        nome_empresa,
+        nome,
         descricao,
         tipo_convenio,
-        ft.Row(
-            controls=[
-                data_fim,
-                botao_data_fim
-            ]
-        ),
         responsavel,
         telefone,
         cnpj,

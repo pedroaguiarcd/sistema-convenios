@@ -9,7 +9,7 @@ def criarNotificacaoVencimento(convenio, diasRestantes):
         lida=False
     ).first()
 
-    nova_mensagem = f"O convênio '{convenio.id}' está com vencimento em {diasRestantes} dias."
+    nova_mensagem = f"O convênio '{convenio.descricao}' vence em {diasRestantes} dias."
 
     if notificacaoExistente:
 
@@ -23,7 +23,7 @@ def criarNotificacaoVencimento(convenio, diasRestantes):
     notificacao = Notification(
         convenio_id=convenio.id,
         titulo="Convênio próximo do vencimento",
-        mensagem=f"O convênio '{convenio.id}' está com vencimento em {diasRestantes} dias.",
+        mensagem=f"O convênio '{convenio.descricao}' vence em {diasRestantes} dias.",
         tipo="vencimento"
     )
 
