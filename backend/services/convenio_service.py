@@ -92,9 +92,7 @@ def listar_convenios(status=None):
             c
             for c in convenios
             if c.status_real == "vencido"
-            and not c.deletado
         ]
-
     elif status == "cancelado":
 
         convenios = [
@@ -151,19 +149,21 @@ def listar_convenios(status=None):
 
 def criar_convenio(
     empresa_id,
+    nome,
     descricao,
     tipo_convenio,
-    data_fim,
-    telefone,
-    cnpj,
-    endereco,
-    responsavel_legal,
+    data_fim=None,
+    telefone="",
+    cnpj="",
+    endereco="",
+    responsavel_legal="",
     documento_anexo="",
     arquivo_documento=None
 ):
 
     convenio = Convenio(
         empresa_id=empresa_id,
+        nome=nome,
         descricao=descricao,
         tipo_convenio=tipo_convenio,
         data_inicio=None,

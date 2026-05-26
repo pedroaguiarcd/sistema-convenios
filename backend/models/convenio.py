@@ -14,6 +14,12 @@ class Convenio(db.Model):
         nullable=False
     )
 
+    nome = db.Column(
+    db.String(100),
+    nullable=True
+)
+
+
     empresa = db.relationship(
         "Empresa",
         backref="convenios"
@@ -110,14 +116,14 @@ class Convenio(db.Model):
     @property
     def status_real(self):
 
-        if self.status == "pendente":
-            return "pendente"
-
         if self.status == "cancelado":
             return "cancelado"
 
-        if self.dias_para_vencer is not None and self.dias_para_vencer <= 0:
+        if self.dias_para_vencer is not None and self.dias_para_vencer < 0:
             return "vencido"
+
+        if self.status == "pendente":
+            return "pendente"
 
         return "ativo"
 

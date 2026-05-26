@@ -3,7 +3,7 @@ import os
 import webbrowser
 from datetime import date
 
-from backend.database import criar_app_flask
+from backend.database import criar_app_flask, db
 from backend.models.convenio import Convenio
 
 from backend.services.convenio_service import (
@@ -46,113 +46,11 @@ def tela_gestor(page: ft.Page):
         color="green"
     )
 
-    alertas = ft.Column(
-        spacing=10
-    )
-
-    def carregar_alertas_vencimento():
-
-        alertas.controls.clear()
-
-        with app_flask.app_context():
-
-            hoje = date.today()
-
-            convenios = (
-                Convenio.query
-                .filter(
-                    Convenio.data_fim != None,
-                    Convenio.status != "pendente"
-                )
-                .all()
-            )
-
-            proximos = []
-            vencidos = []
-
-            for convenio in convenios:
-
-                dias_restantes = (convenio.data_fim - hoje).days
-
-                nome_empresa = (
-                    convenio.empresa.nome
-                    if convenio.empresa
-                    else "Empresa não informada"
-                )
-
-                if dias_restantes < 0:
-                    vencidos.append((convenio, nome_empresa, dias_restantes))
-
-                elif dias_restantes <= 30:
-                    proximos.append((convenio, nome_empresa, dias_restantes))
-
-            if not proximos and not vencidos:
-
-                alertas.controls.append(
-                    ft.Container(
-                        padding=15,
-                        border_radius=10,
-                        bgcolor="#ECFDF5",
-                        content=ft.Text(
-                            "✅ Nenhum convênio próximo do vencimento.",
-                            color="#065F46",
-                            weight=ft.FontWeight.BOLD
-                        )
-                    )
-                )
-
-        for convenio, nome_empresa, dias in vencidos:
-
-            alertas.controls.append(
-                ft.Container(
-                    padding=15,
-                    border_radius=10,
-                    bgcolor="#FEE2E2",
-                    content=ft.Column(
-                        controls=[
-                            ft.Text(
-                                "❌ Convênio vencido",
-                                weight=ft.FontWeight.BOLD,
-                                color="#991B1B"
-                            ),
-                            ft.Text(
-                                f"{nome_empresa} venceu há {abs(dias)} dias.",
-                                color="#7F1D1D"
-                            )
-                        ]
-                    )
-                )
-            )
-
-        for convenio, nome_empresa, dias in proximos:
-
-            alertas.controls.append(
-                ft.Container(
-                    padding=15,
-                    border_radius=10,
-                    bgcolor="#FEF3C7",
-                    content=ft.Column(
-                        controls=[
-                            ft.Text(
-                                "⚠️ Convênio próximo do vencimento",
-                                weight=ft.FontWeight.BOLD,
-                                color="#92400E"
-                            ),
-                            ft.Text(
-                                f"{nome_empresa} vence em {dias} dias.",
-                                color="#78350F"
-                            )
-                        ]
-                    )
-                )
-            )
-
     def voltar(e):
 
         from frontend.views.convenios import tela_convenios
 
         tela_convenios(page)
-
 
     def carregar_pendentes():
 
@@ -177,14 +75,137 @@ def tela_gestor(page: ft.Page):
 
                 def aprovar(e, convenio_id=convenio.id):
 
-                    with app_flask.app_context():
+                    data_fim_escolhida = {
+                        "valor": None
+                    }
 
-                        aprovar_convenio(convenio_id)
+                    texto_data = ft.Text(
+                        "Nenhuma data selecionada.",
+                        color="#6B7280"
+                    )
 
-                    mensagem.value = "Convênio aprovado e termo gerado automaticamente."
-                    mensagem.color = "green"
+                    mensagem_dialog = ft.Text(
+                        "",
+                        color="red"
+                    )
 
-                    carregar_pendentes()
+                    def selecionar_data(ev):
+
+                        if ev.control.value:
+
+                            data_fim_escolhida["valor"] = (
+                                ev.control.value.date()
+                            )
+
+                            texto_data.value = (
+                                f"Data de vencimento: "
+                                f"{data_fim_escolhida['valor'].strftime('%d/%m/%Y')}"
+                            )
+
+                            page.update()
+
+                    calendario = ft.DatePicker(
+                        on_change=selecionar_data
+                    )
+
+                    page.overlay.append(calendario)
+
+                    def abrir_calendario(ev):
+
+                        calendario.open = True
+
+                        page.update()
+
+                    def fechar_dialog():
+
+                        dialog.open = False
+
+                        page.update()
+
+                    def confirmar_aprovacao(ev):
+
+                        if not data_fim_escolhida["valor"]:
+
+                            mensagem_dialog.value = (
+                                "Selecione a data de vencimento do convênio."
+                            )
+
+                            page.update()
+
+                            return
+
+                        if data_fim_escolhida["valor"] <= date.today():
+
+                            mensagem_dialog.value = (
+                                "A data de vencimento deve ser futura."
+                            )
+
+                            page.update()
+
+                            return
+
+                        with app_flask.app_context():
+
+                            convenio_banco = Convenio.query.get(
+                                convenio_id
+                            )
+
+                            convenio_banco.data_fim = (
+                                data_fim_escolhida["valor"]
+                            )
+
+                            db.session.commit()
+
+                            aprovar_convenio(
+                                convenio_id
+                            )
+
+                        fechar_dialog()
+
+                        mensagem.value = (
+                            "Convênio aprovado com data de vencimento definida."
+                        )
+
+                        mensagem.color = "green"
+
+                        carregar_pendentes()
+
+                    dialog = ft.AlertDialog(
+                        title=ft.Text(
+                            "Definir data de vencimento"
+                        ),
+                        content=ft.Column(
+                            tight=True,
+                            spacing=12,
+                            controls=[
+                                ft.Text(
+                                    "Antes de aprovar, informe a data de vencimento do convênio."
+                                ),
+                                texto_data,
+                                ft.Button(
+                                    "Selecionar data de vencimento",
+                                    on_click=abrir_calendario
+                                ),
+                                mensagem_dialog
+                            ]
+                        ),
+                        actions=[
+                            ft.Button(
+                                "Cancelar",
+                                on_click=lambda ev: fechar_dialog()
+                            ),
+                            ft.Button(
+                                "Aprovar",
+                                on_click=confirmar_aprovacao
+                            )
+                        ]
+                    )
+
+                    page.overlay.append(dialog)
+
+                    dialog.open = True
+
+                    page.update()
 
                 def rejeitar(e, convenio_id=convenio.id):
 
@@ -235,10 +256,9 @@ def tela_gestor(page: ft.Page):
                         actions=[
 
                             ft.Button(
-    "Cancelar",
-    on_click=lambda x:
-    fechar_dialog()
-),
+                                "Cancelar",
+                                on_click=lambda x: fechar_dialog()
+                            ),
 
                             ft.Button(
                                 "Confirmar",
@@ -337,6 +357,12 @@ def tela_gestor(page: ft.Page):
                     else "Empresa não informada"
                 )
 
+                data_vencimento = (
+                    convenio.data_fim.strftime("%d/%m/%Y")
+                    if convenio.data_fim
+                    else "Aguardando definição pelo gestor"
+                )
+
                 card = ft.Container(
                     padding=22,
                     border_radius=12,
@@ -379,7 +405,7 @@ def tela_gestor(page: ft.Page):
                             ),
 
                             ft.Text(
-                                f"Vencimento: {convenio.data_fim}"
+                                f"Vencimento: {data_vencimento}"
                             ),
 
                             ft.Row(
@@ -420,27 +446,15 @@ def tela_gestor(page: ft.Page):
         page.update()
 
     page.add(
-    titulo,
+        titulo,
+        subtitulo,
+        mensagem,
+        lista,
 
-    ft.Text(
-        "Alertas de vencimento",
-        size=20,
-        weight=ft.FontWeight.BOLD,
-        color="#222"
-    ),
-
-    alertas,
-
-    ft.Divider(),
-
-    subtitulo,
-    mensagem,
-    lista,
-
-    ft.Button(
-        "Voltar",
-        on_click=voltar
+        ft.Button(
+            "Voltar",
+            on_click=voltar
+        )
     )
-)
-    carregar_alertas_vencimento()
+
     carregar_pendentes()
