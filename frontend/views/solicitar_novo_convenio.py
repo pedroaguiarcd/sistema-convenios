@@ -24,7 +24,7 @@ def tela_solicitar_convenio(page: ft.Page):
     )
 
     nome = ft.TextField(
-    label="Nome do convênio",
+    label="Nome da empresa",
     width=500
 )
 
@@ -45,7 +45,7 @@ def tela_solicitar_convenio(page: ft.Page):
     )
 
     responsavel = ft.TextField(
-        label="Responsável legal",
+        label="Representante legal",
         width=500
     )
 

@@ -35,6 +35,60 @@ def tela_empresa(page: ft.Page):
         "Solicitações e acompanhamento de convênios"
     )
 
+    info_empresa = ft.Container(
+        bgcolor="#FFFFFF",
+        border_radius=12,
+        padding=12,
+        content=ft.Row(
+            spacing=12,
+            controls=[
+                ft.Image(
+                    src="assets/brasao_uespi.png",
+                    width=42,
+                    height=42,
+                    fit="contain"
+                ),
+                ft.Column(
+                    spacing=2,
+                    controls=[
+                        ft.Text(
+                            "Empresa Conveniada",
+                            size=14,
+                            weight=ft.FontWeight.BOLD,
+                            color="#1E3A8A"
+                        ),
+                        ft.Text(
+                            "Universidade Estadual do Piauí - UESPI",
+                            size=12,
+                            color="#475569"
+                        ),
+                        ft.Text(
+                            "Acesso: empresa",
+                            size=11,
+                            color="#64748B"
+                        )
+                    ]
+                )
+            ]
+        )
+    )
+
+    cabecalho = ft.Row(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.START,
+        controls=[
+            ft.Column(
+                spacing=4,
+                controls=[
+                    titulo,
+                    subtitulo,
+                    descricao
+                ]
+            ),
+            info_empresa
+        ]
+    )
+
     lista = ft.ListView(
         expand=True,
         spacing=12
@@ -90,12 +144,25 @@ def tela_empresa(page: ft.Page):
                     f"uploads/termos_gerados/termo_{convenio.id}.pdf"
                 )
 
+                nome_convenio = (
+                    convenio.nome
+                    if hasattr(convenio, "nome")
+                    and convenio.nome
+                    else convenio.descricao
+                )
+
                 informacoes = [
 
                     ft.Text(
-                        convenio.descricao,
+                        nome_convenio,
                         size=18,
                         weight=ft.FontWeight.BOLD
+                    ),
+
+                    ft.Text(
+                        convenio.descricao,
+                        size=13,
+                        color="#6B7280"
                     ),
 
                     ft.Text(
@@ -166,17 +233,25 @@ def tela_empresa(page: ft.Page):
     )
 
     page.add(
-        titulo,
-        subtitulo,
-        descricao,
-        botao,
-        ft.Divider(),
-        ft.Text(
-            "Minhas solicitações",
-            size=20,
-            weight=ft.FontWeight.BOLD
-        ),
-        lista
+        ft.Container(
+            expand=True,
+            padding=18,
+            bgcolor="#F4F6F9",
+            content=ft.Column(
+                spacing=12,
+                controls=[
+                    cabecalho,
+                    botao,
+                    ft.Divider(),
+                    ft.Text(
+                        "Minhas solicitações",
+                        size=20,
+                        weight=ft.FontWeight.BOLD
+                    ),
+                    lista
+                ]
+            )
+        )
     )
 
     carregar()
