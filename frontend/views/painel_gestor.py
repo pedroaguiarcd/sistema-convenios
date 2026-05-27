@@ -371,7 +371,7 @@ def tela_gestor(page: ft.Page):
                         spacing=8,
                         controls=[
                             ft.Text(
-                                nome_empresa,
+                                convenio.nome if convenio.nome else convenio.descricao,
                                 size=22,
                                 weight=ft.FontWeight.BOLD
                             ),

@@ -34,6 +34,44 @@ def tela_convenios(page: ft.Page):
         color="#6B7280"
     )
 
+    info_gestor = ft.Container(
+        bgcolor="#FFFFFF",
+        border_radius=12,
+        padding=12,
+        content=ft.Row(
+            spacing=12,
+            controls=[
+                ft.Image(
+                    src="assets/brasao_uespi.png",
+                    width=42,
+                    height=42,
+                    fit="contain"
+                ),
+                ft.Column(
+                    spacing=2,
+                    controls=[
+                        ft.Text(
+                            "Gestor de Convênios",
+                            size=14,
+                            weight=ft.FontWeight.BOLD,
+                            color="#1E3A8A"
+                        ),
+                        ft.Text(
+                            "Universidade Estadual do Piauí - UESPI",
+                            size=12,
+                            color="#475569"
+                        ),
+                        ft.Text(
+                            "Administrador institucional",
+                            size=11,
+                            color="#64748B"
+                        )
+                    ]
+                )
+            ]
+        )
+    )
+
     busca = ft.TextField(
         hint_text="Buscar convênio, empresa, local ou CNPJ...",
         prefix_icon=ft.Icons.SEARCH,
@@ -232,7 +270,7 @@ def tela_convenios(page: ft.Page):
                 notificacao.visible = True
                 notificacao.bgcolor = "#FFF4CC"
                 notificacao_texto.value = (
-                    f"{pendentes} solicitação(ões) aguardando análise."
+                    f"{pendentes} solicitação(ões) de convênios aguardando análise."
                 )
                 notificacao_texto.color = "#8A5A00"
             else:
@@ -374,6 +412,21 @@ def tela_convenios(page: ft.Page):
         ]
     )
 
+    cabecalho = ft.Row(
+        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+        vertical_alignment=ft.CrossAxisAlignment.START,
+        controls=[
+            ft.Column(
+                spacing=4,
+                controls=[
+                    titulo,
+                    subtitulo
+                ]
+            ),
+            info_gestor
+        ]
+    )
+
     conteudo = ft.Container(
         expand=True,
         padding=18,
@@ -381,8 +434,7 @@ def tela_convenios(page: ft.Page):
         content=ft.Column(
             spacing=10,
             controls=[
-                titulo,
-                subtitulo,
+                cabecalho,
                 avisos,
                 dashboard,
                 busca,

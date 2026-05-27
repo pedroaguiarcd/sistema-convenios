@@ -12,39 +12,26 @@ app_flask = criar_app_flask()
 
 
 def cor_status(convenio):
-
     if convenio.status_real == "vencido":
         return "#DC2626"
-
     if convenio.status_real == "pendente":
         return "#D97706"
-
     if convenio.status_real == "cancelado":
         return "#6B7280"
-
     return "#16A34A"
 
 
 def texto_status(convenio):
-
     if convenio.status_real == "vencido":
         return "Vencido"
-
     if convenio.status_real == "pendente":
         return "Pendente"
-
     if convenio.status_real == "cancelado":
         return "Cancelado"
-
     return "Ativo"
 
 
-def criar_card_convenio(
-    convenio,
-    page=None,
-    atualizar=None,
-    numero=0
-):
+def criar_card_convenio(convenio, page=None, atualizar=None, numero=0):
 
     expandido = False
 
@@ -59,21 +46,13 @@ def criar_card_convenio(
         nome_empresa = convenio.empresa.nome
 
     def alternar(e):
-
         nonlocal expandido
-
         expandido = not expandido
-
         detalhes.visible = expandido
-
         page.update()
 
     def editar(e):
-
-        tela_editar_convenio(
-            page,
-            convenio.id
-        )
+        tela_editar_convenio(page, convenio.id)
 
     def excluir(e):
 
@@ -83,22 +62,15 @@ def criar_card_convenio(
         )
 
         def fechar_dialog():
-
             dialog.open = False
-
             page.update()
 
         def confirmar(ev):
-
             if not motivo.value:
                 return
 
             with app_flask.app_context():
-
-                excluir_convenio(
-                    convenio.id,
-                    motivo.value
-                )
+                excluir_convenio(convenio.id, motivo.value)
 
             fechar_dialog()
 
@@ -125,10 +97,7 @@ def criar_card_convenio(
         page.update()
 
     def gerar_termo(e):
-
-        gerar_termo_convenio(
-            convenio
-        )
+        gerar_termo_convenio(convenio)
 
         if atualizar:
             atualizar()
@@ -140,10 +109,7 @@ def criar_card_convenio(
         )
 
         if os.path.exists(caminho):
-
-            webbrowser.open(
-                f"file://{caminho}"
-            )
+            webbrowser.open(f"file://{caminho}")
 
     def abrir_documento(e):
 
@@ -155,15 +121,11 @@ def criar_card_convenio(
         )
 
         if os.path.exists(caminho):
-
-            webbrowser.open(
-                f"file://{caminho}"
-            )
+            webbrowser.open(f"file://{caminho}")
 
     informacoes_alteracao = []
 
     if convenio.alterado_em:
-
         informacoes_alteracao.append(
             ft.Text(
                 f"Alterado em: {convenio.alterado_em}",
@@ -172,7 +134,6 @@ def criar_card_convenio(
         )
 
     if convenio.motivo_alteracao:
-
         informacoes_alteracao.append(
             ft.Text(
                 f"Motivo da alteração: {convenio.motivo_alteracao}",
@@ -181,7 +142,6 @@ def criar_card_convenio(
         )
 
     if convenio.campos_alterados:
-
         informacoes_alteracao.append(
             ft.Text(
                 f"Campos alterados:\n{convenio.campos_alterados}",
@@ -190,7 +150,6 @@ def criar_card_convenio(
         )
 
     if convenio.excluido_em:
-
         informacoes_alteracao.append(
             ft.Text(
                 f"Excluído em: {convenio.excluido_em}",
@@ -199,7 +158,6 @@ def criar_card_convenio(
         )
 
     if convenio.motivo_exclusao:
-
         informacoes_alteracao.append(
             ft.Text(
                 f"Motivo da exclusão: {convenio.motivo_exclusao}",
@@ -208,7 +166,6 @@ def criar_card_convenio(
         )
 
     if convenio.data_cancelamento:
-
         informacoes_alteracao.append(
             ft.Text(
                 f"Cancelado em: {convenio.data_cancelamento}",
@@ -217,7 +174,6 @@ def criar_card_convenio(
         )
 
     if convenio.motivo_cancelamento:
-
         informacoes_alteracao.append(
             ft.Text(
                 f"Motivo do cancelamento: {convenio.motivo_cancelamento}",
@@ -226,8 +182,17 @@ def criar_card_convenio(
         )
 
     detalhes.controls = [
-
         ft.Divider(),
+
+        ft.Text(
+            f"Nome do convênio: {convenio.nome}"
+            if hasattr(convenio, "nome") and convenio.nome
+            else "Nome do convênio: não informado"
+        ),
+
+        ft.Text(
+            f"Descrição: {convenio.descricao}"
+        ),
 
         ft.Text(
             f"Representante: {convenio.responsavel_legal}"
@@ -253,9 +218,7 @@ def criar_card_convenio(
 
         ft.Text(
             f"Dias restantes: {convenio.dias_para_vencer}",
-            color=cor_status(
-                convenio
-            )
+            color=cor_status(convenio)
         ),
 
         *informacoes_alteracao,
@@ -294,14 +257,9 @@ def criar_card_convenio(
         )
     ]
 
-    numero_visual = (
-        str(numero)
-        if numero
-        else "-"
-    )
+    numero_visual = str(numero) if numero else "-"
 
     return ft.Container(
-
         bgcolor="#FFFFFF",
         border_radius=14,
         padding=12,
@@ -338,12 +296,15 @@ def criar_card_convenio(
                                 spacing=4,
                                 controls=[
                                     ft.Text(
-                                        convenio.descricao,
+                                        convenio.nome
+                                        if hasattr(convenio, "nome") and convenio.nome
+                                        else nome_empresa,
                                         size=18,
                                         weight=ft.FontWeight.BOLD
                                     ),
+
                                     ft.Text(
-                                        nome_empresa,
+                                        convenio.descricao,
                                         size=13,
                                         color="#6B7280"
                                     )
@@ -356,17 +317,14 @@ def criar_card_convenio(
                             content=ft.Column(
                                 controls=[
                                     ft.Text(
-                                        convenio.nome
-                                        if hasattr(convenio, "nome") and convenio.nome
-                                        else convenio.descricao,
-                                        size=18,
-                                        weight=ft.FontWeight.BOLD
-                                    ),
-
-                                    ft.Text(
-                                        convenio.descricao,
-                                        size=13,
+                                        "INÍCIO",
+                                        size=11,
                                         color="#6B7280"
+                                    ),
+                                    ft.Text(
+                                        str(convenio.data_inicio)
+                                        if convenio.data_inicio
+                                        else "--"
                                     )
                                 ]
                             )
