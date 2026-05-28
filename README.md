@@ -217,3 +217,6 @@ sistema-convenios/
 └── teste_login.py                     # Teste rápido de autenticação
 ```
 ## Arquitetura do Projeto
+<p align="center">
+  <img src="assets/estrutrura_projeto.jpeg" width="600" />
+</p>
