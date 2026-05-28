@@ -218,5 +218,5 @@ sistema-convenios/
 ```
 ## Arquitetura do Projeto
 <p align="center">
-  <img src="assets/estrutrura_projeto.jpeg" width="600" />
+  <img src="templates/estrutrura_projeto.jpeg" width="600" />
 </p>
