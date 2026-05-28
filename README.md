@@ -12,60 +12,87 @@ Aplicação para o gerenciamento de convênios de estagios da UESPI.
 sistema-convenios/
 │
 ├── backend/
-│   ├── app.py                 # Inicialização do Flask
-│   ├── database.py            # Conexão e setup do MySQL
-│   ├── config.py              # Configurações globais
+│   ├── __init__.py
+│   ├── app.py                         # Inicialização do Flask
+│   ├── config.py                      # Configurações globais
+│   ├── database.py                    # Configuração/conexão do banco
 │   │
-│   ├── models/                # Modelos das entidades do sistema
+│   ├── criar_tabela.py                # Criação inicial das tabelas
+│   ├── criar_usuario.py               # Script de criação de usuários
+│   ├── criar_empresa_usuario.py       # Relacionamento empresa/usuário
+│   ├── criar_modelo_doc.py            # Criação de modelos de documentos
+│   │
+│   ├── models/                        # Modelos das entidades
 │   │   ├── __init__.py
-│   │   ├── usuario.py         # Modelo de usuários
-│   │   ├── empresa.py         # Modelo das empresas conveniadas
-│   │   ├── convenio.py        # Modelo dos convênios
-│   │   └── dashboard.py       # Consultas/resumos do dashboard
+│   │   ├── usuario.py                 # Modelo de usuários
+│   │   ├── empresa.py                 # Modelo das empresas
+│   │   ├── convenio.py                # Modelo dos convênios
+│   │   └── notifications.py           # Modelo de notificações
 │   │
-│   ├── routes/                # Rotas/endpoints da API
+│   ├── routes/                        # Rotas/endpoints da API
 │   │   ├── __init__.py
-│   │   ├── auth.py            # Rotas de autenticação
-│   │   ├── empresas.py        # Rotas de empresas
-│   │   ├── convenios.py       # Rotas de convênios
-│   │   └── dashboard.py       # Rotas do dashboard
+│   │   ├── auth.py                    # Rotas de autenticação
+│   │   ├── empresas.py                # Rotas das empresas
+│   │   ├── convenios.py               # Rotas dos convênios
+│   │   ├── dashboard.py               # Rotas do dashboard
+│   │   └── notifications.py           # Rotas de notificações
 │   │
-│   ├── services/              # Regras de negócio
+│   ├── services/                      # Regras de negócio
 │   │   ├── __init__.py
-│   │   ├── pdf_service.py     # Geração de PDFs/relatórios
-│   │   ├── auth_service.py    # Lógica de autenticação
-│   │   ├── vencimento_service.py # Controle de vencimentos
-│   │   └── convenio_service.py   # Regras dos convênios
+│   │   ├── auth_service.py            # Lógica de autenticação
+│   │   ├── convenio_service.py        # Regras dos convênios
+│   │   ├── vencimento_service.py      # Controle de vencimentos
+│   │   ├── notificacao_service.py     # Sistema de notificações
+│   │   └── pdf_service.py             # Geração de PDFs/documentos
 │   │
-│   └── utils/                 # Funções auxiliares/utilitárias
+│   └── utils/                         # Funções auxiliares
 │       ├── __init__.py
 │       └── helpers.py
 │
-├── frontend/                  # Interface gráfica em Flet
-│   ├── main.py                # Inicialização da interface
+├── frontend/                          # Interface gráfica em Flet
+│   ├── __init__.py
+│   ├── main.py                        # Inicialização da interface
 │   │
-│   ├── views/                 # Telas do sistema
+│   ├── views/                         # Telas do sistema
+│   │   ├── __init__.py
 │   │   ├── login.py
-│   │   ├── dashboard.py
-│   │   ├── empresas.py
-│   │   └── convenios.py
+│   │   ├── convenios.py
+│   │   ├── editar_convenio.py
+│   │   ├── historico.py
+│   │   ├── notificacoes.py
+│   │   ├── painel_empresa.py
+│   │   ├── painel_gestor.py
+│   │   ├── proximos_vencimento.py
+│   │   └── solicitar_novo_convenio.py
 │   │
-│   └── components/            # Componentes reutilizáveis
-│       ├── navbar.py
+│   └── components/                    # Componentes reutilizáveis
+│       ├── __init__.py
 │       └── cards.py
 │
 ├── database/
-│   ├── scripts.sql            # Scripts de criação do banco
-│   └── seed.sql               # Dados iniciais/testes
+│   ├── scripts.sql                    # Estrutura do banco
+│   └── seed.sql                       # Dados iniciais/testes
 │
-├── tests/                     # Testes unitários e integração
-│   ├── test_auth.py
-│   ├── test_convenios.py
-│   ├── test_empresas.py
-│   └── test_dashboard.py
+├── templates/                         # Modelos de documentos
+│   └── termo_abertura_modelo.docx
 │
-├── .env                       # Variáveis de ambiente
-├── requirements.txt           # Dependências do projeto
-├── .gitignore                 # Arquivos ignorados pelo Git
-├── README.md                  # Documentação principal
-└── run.py                     # Script principal para execução
+├── uploads/                           # Arquivos enviados/gerados
+│   ├── documentos/
+│   │   └── SECOM2026_Plano_Patrocinio_Visual.pdf
+│   │
+│   └── termos_gerados/
+│       ├── termo_24.pdf
+│       └── termo_27.pdf
+│
+├── assets/                            # Recursos visuais do sistema
+│   └── brasao_uespi.png
+│
+├── .git/                              # Controle de versão Git
+├── .gitignore
+├── README.md
+├── requirements.txt
+│
+├── run.py                             # Inicialização principal
+├── seed.py                            # Popular banco com dados iniciais
+├── seed_test_notifications.py         # Popular notificações de teste
+└── teste_login.py                     # Teste rápido de autenticação
