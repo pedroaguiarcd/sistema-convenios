@@ -76,11 +76,11 @@ sistema-convenios/
 ├── templates/                         # Modelos de documentos
 │   └── termo_abertura_modelo.docx
 │
-├── uploads/                           # Arquivos enviados/gerados
+├── uploads/                           # Arquivos enviados
 │   ├── documentos/
-│   │   └── SECOM2026_Plano_Patrocinio_Visual.pdf
+│   │ 
 │   │
-│   └── termos_gerados/
+│   └── termos_gerados/                 # PDFs gerados automaticamente
 │       ├── termo_24.pdf
 │       └── termo_27.pdf
 │
